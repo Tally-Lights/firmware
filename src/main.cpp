@@ -5,7 +5,9 @@
 #include <ESPmDNS.h>
 #include <Telemetry.h>
 #include <DrawStrings.h>
-#include "HttpsOTAUpdate.h"
+#include <HttpsOTAUpdate.h>
+#include <HTTPClient.h>
+#include "OTA.h"
 
 // Color definitions (http://www.barth-dev.de/online/rgb565-color-picker/)
 #define PREVIEWCOLOR 0x0400 // Green
@@ -22,6 +24,9 @@ String password;
 // Stores last camera number & last WiFi credentials
 Preferences preferences;
 
+// OTA updates
+static HttpsOTAStatus_t otastatus;
+
 // Current state of TCP server connection (defaults to true so just for the first time we simulate a disconnection)
 bool connectedToServer = true;
 bool serverDisconnected = false;
@@ -29,7 +34,8 @@ unsigned long lastServerCheck = 0;
 // Store how long has passed from the last mDNS scan
 unsigned long lastMDNSScan = 0;
 // Current state of WiFi connection (defaults to true so just for the first time we simulate a disconnection)
-bool firstWifiConnection = true;
+bool connectedToWifi = true;
+bool checkForUpdates = true;
 
 int buttonAMillis = 0;
 
@@ -123,7 +129,20 @@ void loop()
 
   if (WiFi.status() == WL_CONNECTED)
   {
-    firstWifiConnection = true;
+    if (checkForUpdates) {
+      Serial.println("Checking for updates");
+      checkForUpdates = false;
+      HTTPClient http;
+      http.begin("https://github.com/Tally-Lights/firmware/releases/latest/version.txt", certificate); //Specify the URL and certificate
+      int httpCode = http.GET();
+      if (httpCode == 200) { //Check for the returning code
+        String payload = http.getString();
+        Serial.println(payload);
+      }
+    }
+    if (!connectedToWifi) {
+      connectedToWifi = true;
+    }
     if (checkServerConnection())
     { // If it is connected to TCP server
       if (serverDisconnected == true)
@@ -163,8 +182,8 @@ void loop()
   }
   else
   {
-    if (firstWifiConnection == true)
-    {                  // Check if we were connected before (that means a disconnection occurred)
+    if (connectedToWifi == true)
+    { // Check if we were connected before (that means a disconnection occurred)
       backGroundColor = BLACK;
       connectToWiFi(); // Try to reconnect
     }
@@ -258,7 +277,7 @@ void connectToWiFi()
   WiFi.mode(WIFI_STA);
   WiFi.setSleep(false); //Turn off wifi sleep in STA mode to improve response speed
   WiFi.begin(ssid.c_str(), password.c_str());
-  firstWifiConnection = false;
+  connectedToWifi = false;
 }
 
 // Searches for the server IP using MDNS

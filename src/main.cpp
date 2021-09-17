@@ -138,6 +138,9 @@ void loop()
       if (httpCode == 200) { //Check for the returning code
         String payload = http.getString();
         Serial.println(payload);
+        if (payload != preferences.getString("version")) {
+          // Start update
+        }
       }
     }
     if (!connectedToWifi) {

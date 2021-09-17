@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <M5StickC.h>
 #include <WiFi.h>
-#include "drawStrings.h"
+#include "DrawStrings.h"
 
 extern byte batteryPercentage;
 extern int signalStrength;

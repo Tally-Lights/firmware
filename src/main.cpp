@@ -139,7 +139,7 @@ void loop()
         String payload = http.getString();
         Serial.println(payload);
         if (payload != preferences.getString("version")) {
-          // Start update
+          // Start update procedure
         }
       }
     }

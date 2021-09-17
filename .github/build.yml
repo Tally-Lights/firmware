@@ -1,6 +1,9 @@
 name: PlatformIO CI
 
-on: [push]
+on:
+  push:
+    tags:
+      - v*
 
 jobs:
   build:
@@ -27,3 +30,10 @@ jobs:
         pip install --upgrade platformio
     - name: Run PlatformIO
       run: pio run -e m5stick-c
+    - name: Create version file
+      run: echo ${GITHUB_REF#refs/*/} > version.txt
+    - uses: ncipollo/release-action@v1
+      with:
+        artifacts: "firmware.bin,version.txt"
+        draft: true
+        token: ${{ secrets.GITHUB_TOKEN }}

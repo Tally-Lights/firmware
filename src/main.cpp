@@ -137,7 +137,7 @@ void loop()
       Serial.println(payload);
       if (httpCode == 200) { //Check for the returning code
         Serial.println(payload);
-        //if (payload != preferences.getString("version")) {
+        if (payload != preferences.getString("version")) {
           HttpsOTA.onHttpEvent(HttpEvent);
           Serial.println("Starting OTA");
           drawUpdate(batteryPercentage, isCharging);
@@ -148,8 +148,8 @@ void loop()
           }
           Serial.println("OTA done");
           esp_restart();
-          //preferences.putString("version", payload);
-        //}
+          preferences.putString("version", payload);
+        }
       }
     }
     if (!connectedToWifi) {

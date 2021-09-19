@@ -37,7 +37,7 @@ void drawServerConnection(int batteryPercentage, bool isCharging) {
 
 void drawUpdate(int batteryPercentage, bool isCharging) {
   M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.drawString("Aggiornamento", M5.Lcd.width() / 2, 48, 2);
-  M5.Lcd.drawString("firmware in corso", M5.Lcd.width() / 2, 66, 2);
+  M5.Lcd.drawString("Aggiornamento", M5.Lcd.width() / 2, 44, 2);
+  M5.Lcd.drawString("firmware in corso", M5.Lcd.width() / 2, 62, 2);
   drawBattery(batteryPercentage, isCharging, BLACK);
 }

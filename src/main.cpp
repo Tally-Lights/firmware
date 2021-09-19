@@ -147,8 +147,8 @@ void loop()
             delay(1000);
           }
           Serial.println("OTA done");
-          esp_restart();
           preferences.putString("version", payload);
+          esp_restart();
         }
       }
     }

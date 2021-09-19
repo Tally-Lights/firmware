@@ -30,10 +30,21 @@ jobs:
         pip install --upgrade platformio
     - name: Run PlatformIO
       run: pio run -e m5stick-c
+    - name: Move files
+      run: |
+        mkdir files
+        mv .pio/build/m5stick-c/firmware.bin files/firmware.bin
     - name: Create version file
-      run: echo ${GITHUB_REF#refs/*/} > version.txt
+      run: echo ${GITHUB_REF#refs/*/} > files/version.txt
     - uses: ncipollo/release-action@v1
       with:
-        artifacts: ".pio/build/m5stick-c/firmware.bin,version.txt"
+        artifacts: "files/firmware.bin,files/version.txt"
         draft: true
         token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: kevinpainchaud/simple-ftp-deploy-action@v1.2.1
+      with:
+        ftp_host: ${{ secrets.FTP_HOST }}
+        ftp_username: ${{ secrets.FTP_USERNAME }}
+        ftp_password: ${{ secrets.FTP_PASSWORD }}
+        local_source_dir: "files/"
+        dist_target_dir: "/"

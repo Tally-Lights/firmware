@@ -1,11 +1,11 @@
 #include "DrawStrings.h"
 #include "Charging.h"
 
-void drawWiFiSearch(int batteryPercentage, bool isCharging, int backGroundColor) {
+void drawWiFiSearch(int batteryPercentage, bool isCharging) {
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.drawString("Ricerca", M5.Lcd.width() / 2, 42, 4);
   M5.Lcd.drawString("WiFi", M5.Lcd.width() / 2, 66, 4);
-  drawBattery(batteryPercentage, isCharging, backGroundColor);
+  drawBattery(batteryPercentage, isCharging, BLACK);
 }
 
 void drawNumber(int foreGroundColor, int backGroundColor, int cameraNumber, int batteryPercentage, bool isCharging) {
@@ -27,10 +27,17 @@ void drawBattery(int batteryPercentage, bool isCharging, int backGroundColor) {
   }
 }
 
-void drawServerConnection(int batteryPercentage, bool isCharging, int backGroundColor) {
+void drawServerConnection(int batteryPercentage, bool isCharging) {
   M5.Lcd.fillScreen(BLACK);
   M5.Lcd.setTextColor(WHITE, BLACK);
   M5.Lcd.drawString("Ricerca", M5.Lcd.width() / 2, 42, 4);
   M5.Lcd.drawString("switcher", M5.Lcd.width() / 2, 66, 4);
-  drawBattery(batteryPercentage, isCharging, backGroundColor);
+  drawBattery(batteryPercentage, isCharging, BLACK);
+}
+
+void drawUpdate(int batteryPercentage, bool isCharging) {
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.drawString("Aggiornamento", M5.Lcd.width() / 2, 48, 2);
+  M5.Lcd.drawString("firmware", M5.Lcd.width() / 2, 60, 2);
+  drawBattery(batteryPercentage, isCharging, BLACK);
 }

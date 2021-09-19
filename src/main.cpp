@@ -24,9 +24,6 @@ String password;
 // Stores last camera number & last WiFi credentials
 Preferences preferences;
 
-// OTA updates
-static HttpsOTAStatus_t otastatus;
-
 // Current state of TCP server connection (defaults to true so just for the first time we simulate a disconnection)
 bool connectedToServer = true;
 bool serverDisconnected = false;
@@ -133,15 +130,27 @@ void loop()
       Serial.println("Checking for updates");
       checkForUpdates = false;
       HTTPClient http;
-      http.begin("https://github.com/Tally-Lights/firmware/releases/latest/version.txt", certificate); //Specify the URL and certificate
+      http.setFollowRedirects(HTTPC_FORCE_FOLLOW_REDIRECTS);
+      http.begin("https://dmsoftware.altervista.org/version.txt", certificate);
       int httpCode = http.GET();
+      String payload = http.getString();
+      Serial.println(payload);
       if (httpCode == 200) { //Check for the returning code
-        String payload = http.getString();
         Serial.println(payload);
-        if (payload != preferences.getString("version")) {
-          // Start update procedure
-        }
-      }
+        //if (payload != preferences.getString("version")) {*/
+          HttpsOTA.onHttpEvent(HttpEvent);
+          Serial.println("Starting OTA");
+          drawUpdate(batteryPercentage, isCharging);
+
+          HttpsOTA.begin("https://dmsoftware.altervista.org/firmware.bin", certificate);
+          while(HttpsOTA.status() != 2) {
+            delay(1000);
+          }
+          Serial.println("OTA done");
+          esp_restart();
+          //preferences.putString("version", payload);
+        //}
+      //}
     }
     if (!connectedToWifi) {
       connectedToWifi = true;
@@ -170,7 +179,7 @@ void loop()
         backGroundColor = BLACK;
         MDNS.begin("tally");
         lastMDNSScan = 0;
-        drawServerConnection(batteryPercentage, isCharging, backGroundColor);
+        drawServerConnection(batteryPercentage, isCharging);
       }
       if (lastMDNSScan == 0 || millis() - lastMDNSScan > 2000)
       { // Do a mDNS scan every 2 seconds
@@ -273,7 +282,7 @@ void updateCamera(int newCamera)
 // Initiates WiFi connection with credentials stored in flash and updates screen information
 void connectToWiFi()
 {
-  drawWiFiSearch(batteryPercentage, isCharging, backGroundColor);
+  drawWiFiSearch(batteryPercentage, isCharging);
   ssid = preferences.getString("ssid");
   password = preferences.getString("password");
   Serial.println(ssid + " " + password);
